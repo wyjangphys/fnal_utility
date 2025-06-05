@@ -93,7 +93,7 @@ set_prompt(){
 
 ups_list_sort(){
   local package=$1
-  if [[ -z "$package" ]]; then
+  if [ -z "$package" ]; then
     echo "Usage: ups_list_sort <package name>"
     return 1
   fi
