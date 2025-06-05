@@ -1,6 +1,10 @@
 #!/bin/bash
 
 function set_samweb() {
+    if [ -z "$1" ]; then
+      echo "ERROR: function set_samweb() require <experiment> argument. -- no argument provided."
+      return 1
+    fi
     exp=$1
     export SAM_EXPERIMENT=$exp 
     export SAM_GROUP=$exp
@@ -11,6 +15,10 @@ function set_samweb() {
 }
 
 function get_bearer_token() {
+    if [ -z "$1" ]; then
+      echo "ERROR: function get_bearer_token() require <experiment> argument. -- no argument provided."
+      return 1
+    fi
     exp=$1
     export BEARER_TOKEN_FILE=/tmp/bt_u$(id -u)
     htgettoken -a htvaultprod.fnal.gov -i $exp
