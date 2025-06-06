@@ -3,6 +3,8 @@
 echo "Running on SL7"
 check_n_start_apptainer
 . /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+CMAKE_VERSION=v3_27_4
+run_command "Setting up cmake $CMAKE_VERSION" setup cmake $CMAKE_VERSION
 export DUNELAR_VERSION=v10_08_00d00
 export DUNELAR_QUALIFIER=e26:prof
 run_command "Setting up dunesw $DUNELAR_VERSION $DUNELAR_QUALIFIER" setup dunesw $DUNELAR_VERSION -q $DUNELAR_QUALIFIER
