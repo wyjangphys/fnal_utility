@@ -85,11 +85,13 @@ case "$MODE" in
     echo "Installing fnal_utility scripts to $DESTINATION"
     copy_files
     add_alias_block
+    echo "fnal_utility scripts are installed successfully."
     ;;
   uninstall)
     echo "Uninstalling fnal_utility scripts from $DESTINATION"
     remove_files
     remove_alias_block
+    echo "fnal_utility scripts are removed successfully."
     ;;
   *)
     echo "Unknown mode"
