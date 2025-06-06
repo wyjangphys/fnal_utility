@@ -83,8 +83,6 @@ set_prompt(){
   RESET="\[\033[0m\]"
 
   if [ -n "$APPTAINER_CONTAINER" ]; then
-    echo "Running inside Apptainer"
-
     export PS1="${GREEN}[${RESET}${RED}Appt: ${RESET}${CYAN}\u${RESET}@${BLUE}\h${RESET} \$(shorten_path) ${YELLOW}\$(parse_git_branch)${RESET}${GREEN}]${RESET} \$ "
   else
     export PS1="${GREEN}[${RESET}${CYAN}\u${RESET}@${BLUE}\h${RESET} \$(shorten_path) ${YELLOW}\$(parse_git_branch)${RESET}${GREEN}]${RESET} \$ "
