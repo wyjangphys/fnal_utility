@@ -3,13 +3,14 @@
 # 초기 변수 설정
 BASHRC="$HOME/.bashrc"
 DEFAULT_DEST="$HOME/.local/bin"
-FILES="setup-appt-build.sh|setup-dune.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh"
+FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh"
 ALIASES_FIRST_LINE='#=_=_=_=_=_= added by fnal_utility (do not remove) =_=_=_=_=_=_='
 ALIASES_LAST_LINE='#=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_='
 
 generate_aliases(){
 cat <<EOF
 $ALIASES_FIRST_LINE
+export FNAL_UTIL_ROOT="${DESTINATION}/../"
 alias appt="source $DESTINATION/setup-appt.sh"
 alias appt_build="source $DESTINATION/setup-appt-build.sh"
 alias set-icarus="source $DESTINATION/setup-icarus-sl7.sh"
