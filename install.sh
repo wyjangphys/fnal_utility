@@ -19,7 +19,6 @@ alias setup-genie-bdm=". $DESTINATION/setup-genie-bdm.sh"
 alias setup-vnc=". $DESTINATION/setup-vnc.sh"
 alias clearcert="rm -fv /tmp/x509up_u\$(id -u)"
 $ALIASES_LAST_LINE
-
 EOF
 }
 
