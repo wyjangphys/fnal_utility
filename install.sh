@@ -11,11 +11,12 @@ generate_aliases(){
 cat <<EOF
 $ALIASES_FIRST_LINE
 export FNAL_UTIL_ROOT="${DESTINATION}/../"
-alias appt="source $DESTINATION/setup-appt.sh"
-alias appt_build="source $DESTINATION/setup-appt-build.sh"
-alias set-icarus="source $DESTINATION/setup-icarus-sl7.sh"
-alias set-dune="source $DESTINATION/setup-dune.sh"
-alias set-genie-bdm="source $DESTINATION/setup-genie-bdm.sh"
+alias appt=". $DESTINATION/setup-appt.sh"
+alias appt_build=". $DESTINATION/setup-appt-build.sh"
+alias setup-icarus=". $DESTINATION/setup-icarus-sl7.sh"
+alias setup-dune=". $DESTINATION/setup-dune.sh"
+alias setup-genie-bdm=". $DESTINATION/setup-genie-bdm.sh"
+alias setup-vnc=". $DESTINATION/setup-vnc.sh"
 alias clearcert="rm -fv /tmp/x509up_u\$(id -u)"
 $ALIASES_LAST_LINE
 
