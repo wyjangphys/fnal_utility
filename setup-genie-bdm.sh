@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-source $HOME/.local/bin/utility.sh
+. $FNAL_UTIL_ROOT/bin/utility.sh
 
 echo "Setting Custom GENIE with BDM plugin ... "
 run_command "GENIE=/exp/dune/app/users/wyjang/genie/3.02.04" export GENIE=/exp/dune/app/users/wyjang/genie/3.02.04
