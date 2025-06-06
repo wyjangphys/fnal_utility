@@ -5,9 +5,9 @@ if [ -f /etc/os-release ] ; then
   . /etc/os-release
   echo "Setting Custom GENIE with BDM plugin ... "
   if [ "$ID" = "almalinux" ] && [ "${VERSION_ID#9}" != "$VERSION_ID" ] ; then
-    run_command "Setting GCC 8.2.0 ... " setup gcc v8_2_0
-  elif [ "$ID" = "scientific" ] && [ "${VERSION_ID#7}" != "$VERSION_ID" ] ; then
     run_command "Setting GCC 12.2.0 ... " spack load gcc@12.2.0
+  elif [ "$ID" = "scientific" ] && [ "${VERSION_ID#7}" != "$VERSION_ID" ] ; then
+    run_command "Setting GCC 8.2.0 ... " setup gcc v8_2_0
   else
     echo "Running on other Linux: $ID $VERSION_ID"
   fi
