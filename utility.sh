@@ -1,7 +1,7 @@
 #!/bin/sh
 
 run_command() {
-  tmpfile=$(mktemp "tmpfile.XXXXXX") || exit 1
+  tmpfile=$(mktemp "${TMPDIR:-/tmp}/cmd_output.XXXXXX") || exit 1
   local description="$1"
   shift # this is to shift argument table to the left after removing $1.
   #echo -ne "\r[\033[33m .... \033[0m] $description"
@@ -10,7 +10,6 @@ run_command() {
     "$@"
   } >"$tmpfile" 2>&1
   output=$(cat $tmpfile)
-  rm -rf $tmpfile
   #"$@" # run command with all arguments
   if [ "$?" = 0 ]; then
     printf "\r[\033[32m  OK  \033[0m] %s\n" "$description"
@@ -33,6 +32,7 @@ run_command() {
     #fi
     return 1
   fi
+  rm -rf $tmpfile
 }
 
 unicode_to_utf8() {
