@@ -8,6 +8,7 @@ run_command "Setting up cmake $CMAKE_VERSION" setup cmake $CMAKE_VERSION
 export DUNELAR_VERSION=v10_08_00d00
 export DUNELAR_QUALIFIER=e26:prof
 run_command "Setting up dunesw $DUNELAR_VERSION $DUNELAR_QUALIFIER" setup dunesw $DUNELAR_VERSION -q $DUNELAR_QUALIFIER
+setup dunesw $DUNELAR_VERSION -q $DUNELAR_QUALIFIER
 echo "dunesw dir: $DUNESW_DIR"
 
 #export DUNE_PLOT_STYLE_VERSION=v01_01
