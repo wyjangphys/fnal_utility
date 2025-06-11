@@ -4,14 +4,52 @@ run_command() {
   local description="$1"
   shift # this is to shift argument table to the left after removing $1.
   echo -n "$description ... "
-  "$@" # run the command with arguments
+  output=$("$@" 2>&1) # run the command with arguments
   if [ $? -eq 0 ]; then
-    echo -e "[\033[32m OK \033[0m]"
+    echo -e "[\033[32m \u2713 \033[0m]"
+    #printf '[\033[32m %b \033[0m]\n' "$(printf "$(unicode_to_utf8 2713)")"
+    #if [ -n $output ]; then
+    #  echo $output
+    #fi
     return 0
   else
-    echo -e "[\033[31m FAILED \033[0m]"
+    echo -e "[\033[31m \u2717 \033[0m]"
+    #if [ -n $output ]; then
+    #  echo $output
+    #fi
     return 1
   fi
+}
+
+unicode_to_utf8() {
+    hex="$1"
+    dec=$((16#$hex))
+
+    if [ "$dec" -le 0x7F ]; then
+        # 1-byte
+        printf '\\x%02X' "$dec"
+    elif [ "$dec" -le 0x7FF ]; then
+        # 2-byte
+        b1=$(( (dec >> 6) | 0xC0 ))
+        b2=$(( (dec & 0x3F) | 0x80 ))
+        printf '\\x%02X\\x%02X' "$b1" "$b2"
+    elif [ "$dec" -le 0xFFFF ]; then
+        # 3-byte
+        b1=$(( (dec >> 12) | 0xE0 ))
+        b2=$(( ((dec >> 6) & 0x3F) | 0x80 ))
+        b3=$(( (dec & 0x3F) | 0x80 ))
+        printf '\\x%02X\\x%02X\\x%02X' "$b1" "$b2" "$b3"
+    elif [ "$dec" -le 0x10FFFF ]; then
+        # 4-byte
+        b1=$(( (dec >> 18) | 0xF0 ))
+        b2=$(( ((dec >> 12) & 0x3F) | 0x80 ))
+        b3=$(( ((dec >> 6) & 0x3F) | 0x80 ))
+        b4=$(( (dec & 0x3F) | 0x80 ))
+        printf '\\x%02X\\x%02X\\x%02X\\x%02X' "$b1" "$b2" "$b3" "$b4"
+    else
+        echo "Error: Invalid code point (U+$hex)" >&2
+        return 1
+    fi
 }
 
 parse_git_branch() {
