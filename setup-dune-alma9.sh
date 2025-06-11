@@ -9,7 +9,7 @@ FIFEUTILS_VERSION=3.7.4
 
 # Start loading packages
 echo "Running on Alma Linux 9"
-run_command "Setting spack" . /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
+. /cvmfs/larsoft.opensciencegrid.org/spack-packages/setup-env.sh
 # check spack.readthedocs.io/en/latest/basic_usage.html for the detailed usage.
 run_command "Setting root $ROOT_VERSION via spack" spack load root@$ROOT_VERSION
 run_command "Setting geant4 $GEANT_VERSION via spack" spack load geant4@$GEANT_VERSION

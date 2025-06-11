@@ -1,15 +1,19 @@
-#!/bin/bash
+#!/bin/sh
 
 run_command() {
   local description="$1"
   shift # this is to shift argument table to the left after removing $1.
   #echo -ne "\r[\033[33m .... \033[0m] $description"
   printf "\r[\033[33m .... \033[0m] %s" "$description"
-  #output=$("$@" 2>&1) # run the command with arguments
   # check output message
-  "$@" # run command with all arguments
-  if [ $? -eq 0 ]; then
+  newline=$(printf '\n')
+  output=$( "$@" 2>&1 ) # run the command with arguments
+  #"$@" # run command with all arguments
+  if [ "$?" = 0 ]; then
     printf "\r[\033[32m  OK  \033[0m] %s\n" "$description"
+    if [ ! "$output" = "$newline" ]; then
+      echo "$output" | sed 's/^/ |\t/; s/\n/\n |\t/g' # This places a | at the start of each line.
+    fi
     #echo -e "\r[\033[32m  OK  \033[0m] $description"
     #if [ ! "$output" = "$(printf '\n')" ]; then
     #  echo "$output" | sed 's/^/| /; s/\n/\n| /g' # This places a | at the start of each line.
@@ -17,6 +21,9 @@ run_command() {
     return 0
   else
     printf "\r[\033[31mFAILED\033[0m] %s\n" "$description"
+    if [ ! "$output" = "$newline" ]; then
+      echo "$output" | sed 's/^/ |\t/; s/\n/\n |\t/g' # This places a | at the start of each line.
+    fi
     #echo -e "\r[\033[31mFAILED\033[0m] $description"
     #if [ ! "$output" = "$(printf '\n')" ]; then
     #  echo "$output" | sed 's/^/| /; s/\n/\n| /g'
