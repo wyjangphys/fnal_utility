@@ -5,18 +5,18 @@ run_command() {
   shift # this is to shift argument table to the left after removing $1.
   echo -n "$description ... "
   output=$("$@" 2>&1) # run the command with arguments
+  # check output message
   if [ $? -eq 0 ]; then
     echo -e "[\033[32m \u2713 \033[0m]"
-    #printf '[\033[32m %b \033[0m]\n' "$(printf "$(unicode_to_utf8 2713)")"
-    #if [ -n $output ]; then
-    #  echo $output
-    #fi
+    if [ ! "$output" = "$(printf '\n')" ]; then
+      echo "$output" | sed 's/^/| /; s/\n/\n| /g' # This places a | at the start of each line.
+    fi
     return 0
   else
     echo -e "[\033[31m \u2717 \033[0m]"
-    #if [ -n $output ]; then
-    #  echo $output
-    #fi
+    if [ ! "$output" = "$(printf '\n')" ]; then
+      echo "$output" | sed 's/^/| /; s/\n/\n| /g'
+    fi
     return 1
   fi
 }
