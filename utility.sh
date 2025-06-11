@@ -3,17 +3,18 @@
 run_command() {
   local description="$1"
   shift # this is to shift argument table to the left after removing $1.
-  echo -n "$description ... "
+  echo -ne "\r[\033[33m .... \033[0m] $description"
   #output=$("$@" 2>&1) # run the command with arguments
   # check output message
+  "$@" # run command with all arguments
   if [ $? -eq 0 ]; then
-    echo -e "[\033[32m \u2713 \033[0m]"
+    echo -e "\r[\033[32m  OK  \033[0m] $description"
     #if [ ! "$output" = "$(printf '\n')" ]; then
     #  echo "$output" | sed 's/^/| /; s/\n/\n| /g' # This places a | at the start of each line.
     #fi
     return 0
   else
-    echo -e "[\033[31m \u2717 \033[0m]"
+    echo -e "\r[\033[31mFAILED\033[0m] $description"
     #if [ ! "$output" = "$(printf '\n')" ]; then
     #  echo "$output" | sed 's/^/| /; s/\n/\n| /g'
     #fi
