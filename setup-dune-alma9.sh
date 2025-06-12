@@ -18,8 +18,7 @@ run_command "Setting cmake $CMAKE_VERSION via spack" spack load cmake@$CMAKE_VER
 run_command "Setting gcc $GCC_VERSION via spack" spack load gcc@$GCC_VERSION
 run_command "Setting fife-utils $FIFEUTILS_VERSION via spack" spack load fife-utils@$FIFEUTILS_VERSION
 run_command "Setting r-m-dd-config via spack" spack load r-m-dd-config experiment=dune
-echo "Setting up grid access authorization"
-run_command "└ Getting token from vaultserver" get_bearer_token dune;export BEARER_TOKEN_FILE=/run/user/`id -u`/bt_u`id -u`
+run_command "Setting up grid access authorization" get_bearer_token dune;export BEARER_TOKEN_FILE=/run/user/`id -u`/bt_u`id -u`
 run_command "Setting samweb" set_samweb dune
 run_command "Setting \$PATH variable" export PATH=/exp/dune/app/users/wyjang/dune/edep-sim/edep-gcc-11-x86_64-redhat-linux/bin/edep-sim:$PATH
 run_command "Setting \$LD_LIBRARY_PATH variable" export LD_LIBRARY_PATH=/exp/dune/app/users/wyjang/dune/edep-sim/edep-gcc-11-x86_64-redhat-linux/lib:$LD_LIBRARY_PATH
