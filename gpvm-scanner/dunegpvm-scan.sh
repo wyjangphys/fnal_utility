@@ -14,23 +14,19 @@ DUNEGPVM_END="${DUNEGPVM_END:-16}"
 #ICARUSGPVM_END="${ICARUSGPVM_END:-8}"
 SSH_CONNECT_TIMEOUT="${SSH_CONNECT_TIMEOUT:-6}"
 SSH_OPTS="-o ConnectTimeout=${SSH_CONNECT_TIMEOUT} -o BatchMode=yes -o StrictHostkeyChecking=no -tt"
-CONCURRENCY="${CONCURRENCY:-24}"
+CONCURRENCY="${CONCURRENCY:-16}"
 # -----------------------------------------------------------------------------
 
 OUT_DIR="${HOME}/.local/etc"
 STATUS_DIR="${HOME}/.local/state"
 DUNE_OUT_FILE="${OUT_DIR}/dunegpvm"
-#ICARUS_OUT_FILE="${OUT_DIR}/icarusgpvm"
 DUNE_STATUS_FILE="${STATUS_DIR}/dunegpvm_status.json"
-#ICARUS_STATUS_FILE="${STATUS_DIR}/icarusgpvm_status.json"
 
 mkdir -p "$OUT_DIR" "$STATUS_DIR"
 
 # Temporary files
 DUNE_TMP_CSV="$(mktemp /tmp/dunegpvm_scan.XXXXXX.csv)"
-#ICARUS_TMP_CSV="$(mktemp /tmp/icarusgpvm_scan.XXXXXX.csv)"
-#trap 'rm -f "$DUNE_TMP_CSV"' EXIT
-#trap 'rm -f "$DUNE_TMP_CSV" "$ICARUS_TMP_CSV"' EXIT
+trap 'rm -f "$DUNE_TMP_CSV"' EXIT
 
 timestamp() {
 	date --iso-8601=seconds
@@ -86,6 +82,9 @@ fetch_one() {
 
 # Launch parallel jobs
 for i in $(seq -w "$DUNEGPVM_START" "$DUNEGPVM_END"); do
+#  if [ $i -lt 10 ]; then
+#    i=$(printf "%02d" "$i")
+#  fi
 	host="${HOST_PREFIX}${i}"
 	log "Fetching information from $host"
 	fetch_one "$host" &
