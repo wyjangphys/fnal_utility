@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 # 초기 변수 설정
 BASHRC="$HOME/.bashrc"
 DEFAULT_DEST="$HOME/.local"
-FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh"
+FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh|dunegpvm_ssh_wrapper.sh"
 GPVM_SCANNER_FILES="gpvm-scanner/dunegpvm-scan.service|gpvm-scanner/dunegpvm-scan.sh|gpvm-scanner/dunegpvm-scan.timer"
 ALIASES_FIRST_LINE='#=_=_=_=_=_= added by fnal_utility (do not remove) =_=_=_=_=_=_='
 ALIASES_LAST_LINE='#=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_='
@@ -12,13 +12,14 @@ generate_aliases(){
 cat <<EOF
 $ALIASES_FIRST_LINE
 export FNAL_UTIL_ROOT="${DESTINATION}/../"
-alias appt=". $DESTINATION/setup-appt.sh"
-alias appt_build=". $DESTINATION/setup-appt-build.sh"
-alias setup-icarus=". $DESTINATION/setup-icarus-sl7.sh"
-alias setup-dune=". $DESTINATION/setup-dune.sh"
-alias setup-genie-bdm=". $DESTINATION/setup-genie-bdm.sh"
-alias setup-vnc=". $DESTINATION/setup-vnc.sh"
+alias appt=". $DESTINATION/bin/setup-appt.sh"
+alias appt_build=". $DESTINATION/bin/setup-appt-build.sh"
+alias setup-icarus=". $DESTINATION/bin/setup-icarus-sl7.sh"
+alias setup-dune=". $DESTINATION/bin/setup-dune.sh"
+alias setup-genie-bdm=". $DESTINATION/bin/setup-genie-bdm.sh"
+alias setup-vnc=". $DESTINATION/bin/setup-vnc.sh"
 alias clearcert="rm -fv /tmp/x509up_u\$(id -u)"
+source $DESTINATION/bin/dunegpvm_ssh_wrapper.sh
 $ALIASES_LAST_LINE
 EOF
 }
