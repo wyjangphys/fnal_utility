@@ -82,9 +82,6 @@ fetch_one() {
 
 # Launch parallel jobs
 for i in $(seq -w "$DUNEGPVM_START" "$DUNEGPVM_END"); do
-#  if [ $i -lt 10 ]; then
-#    i=$(printf "%02d" "$i")
-#  fi
 	host="${HOST_PREFIX}${i}"
 	log "Fetching information from $host"
 	fetch_one "$host" &
