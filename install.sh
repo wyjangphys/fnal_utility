@@ -2,8 +2,9 @@
 
 # 초기 변수 설정
 BASHRC="$HOME/.bashrc"
-DEFAULT_DEST="$HOME/.local/bin"
+DEFAULT_DEST="$HOME/.local"
 FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh"
+GPVM_SCANNER_FILES="gpvm-scanner/dunegpvm-scan.service|gpvm-scanner/dunegpvm-scan.sh|gpvm-scanner/dunegpvm-scan.timer"
 ALIASES_FIRST_LINE='#=_=_=_=_=_= added by fnal_utility (do not remove) =_=_=_=_=_=_='
 ALIASES_LAST_LINE='#=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_='
 
@@ -47,16 +48,26 @@ unset IFS
 
 # 공통 함수 (필요시)
 copy_files() {
-  mkdir -p "$DESTINATION"
+  mkdir -p "$DESTINATION/bin"
+  mkdir -p "$DESTINATION/etc"
+  mkdir -p "$DESTINATION/state"
+  mkdir -p "$HOME/.config/systemd/user"
+
   for file in $FILES_LIST; do
-    cp -v "$file" "$DESTINATION/" || echo "Failed to copy $file"
+    cp -v "$file" "$DESTINATION/bin/" || echo "Failed to copy $file"
   done
+  cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
+  cp -v gpvm-scanner/dunegpvm-scan.service $HOME/.config/systemd/user/
+  cp -v gpvm-scanner/dunegpvm-scan.timer $HOME/.config/systemd/user/
 }
 
 remove_files() {
   for file in $FILES_LIST; do
     rm -fv "$DESTINATION/$file" || echo "Failed to remove $file"
   done
+  rm -fv $DESTINATION/bin/dunegpvm-scan.sh
+  rm -fv $HOME/.config/systemd/user/dunegpvm-scan.service
+  rm -fv $HOME/.config/systemd/user/dunegpvm-scan.timer
 }
 
 add_alias_block() {
