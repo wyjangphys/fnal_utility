@@ -1,12 +1,28 @@
-#!/bin/bash
+#!/bin/sh
 
 # 초기 변수 설정
-BASHRC="$HOME/.bashrc"
+SHELL_STARTUP_SCRIPT="$HOME/.bashrc"
 DEFAULT_DEST="$HOME/.local"
 FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh|dunegpvm_ssh_wrapper.sh"
 GPVM_SCANNER_FILES="gpvm-scanner/dunegpvm-scan.service|gpvm-scanner/dunegpvm-scan.sh|gpvm-scanner/dunegpvm-scan.timer"
 ALIASES_FIRST_LINE='#=_=_=_=_=_= added by fnal_utility (do not remove) =_=_=_=_=_=_='
 ALIASES_LAST_LINE='#=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_='
+
+check_shell() {
+  case $SHELL in
+    */sh)
+      SHELL_STARTUP_SCRIPT="$HOME/.profile"
+      ;;
+    */bash)
+      SHELL_STARTUP_SCRIPT="$HOME/.bashrc"
+      ;;
+    */zsh)
+      SHELL_STARTUP_SCRIPT="$HOME/.zshrc"
+      ;;
+    *)
+      ;;
+  esac
+}
 
 generate_aliases(){
 cat <<EOF
@@ -72,41 +88,60 @@ remove_files() {
 }
 
 add_alias_block() {
-  if grep -Fq -- "$ALIASES_FIRST_LINE" "$BASHRC"; then
-    echo "ALIASES block already exists in $BASHRC."
+  if grep -Fq -- "$ALIASES_FIRST_LINE" "$SHELL_STARTUP_SCRIPT"; then
+    echo "ALIASES block already exists in $SHELL_STARTUP_SCRIPT."
   else
-    printf "\n%s\n" "$ALIASES" >> "$BASHRC"
-    echo "ALIASES block added to $BASHRC."
+    echo "\n%s\n" "$ALIASES" >> "$SHELL_STARTUP_SCRIPT"
+    echo "ALIASES block added to $SHELL_STARTUP_SCRIPT."
   fi
 }
 
 remove_alias_block() {
-  if grep -Fq -- "$ALIASES_FIRST_LINE" "$BASHRC" ; then
+  if grep -Fq -- "$ALIASES_FIRST_LINE" "$SHELL_STARTUP_SCRIPT" ; then
     echo "ALIASES block found."
-    cp -v "$BASHRC" "${BASHRC}.bak" || echo "Failed to generate backup file."
-    FIRST_LINE=$(printf '%s\n' "$ALIASES" | head -n1)
-    LAST_LINE=$(printf '%s\n' "$ALIASES" | tail -n1)
-    sed -i "/$(printf '%s' "$FIRST_LINE" | sed 's/[^^]/[&]/g')/,/$(printf '%s' "$LAST_LINE" | sed 's/[^^]/[&]/g')/d" "$BASHRC"
-    echo "ALIASES block removed from ${BASHRC}. Backup file ${BASHRC}.bak made."
+    cp -v "$SHELL_STARTUP_SCRIPT" "${SHELL_STARTUP_SCRIPT}.bak" || echo "Failed to generate backup file."
+    FIRST_LINE=$(echo '%s\n' "$ALIASES" | head -n1)
+    LAST_LINE=$(echo '%s\n' "$ALIASES" | tail -n1)
+    sed -i "/$(echo '%s' "$FIRST_LINE" | sed 's/[^^]/[&]/g')/,/$(echo '%s' "$LAST_LINE" | sed 's/[^^]/[&]/g')/d" "$SHELL_STARTUP_SCRIPT"
+    echo "ALIASES block removed from ${SHELL_STARTUP_SCRIPT}. Backup file ${SHELL_STARTUP_SCRIPT}.bak made."
   fi
 }
+
+stop_gpvm_scanner_daemon() {
+  systemctl --user stop dunegpvm-scan.timer
+  systemctl --user stop dunegpvm-scan.service
+}
+
+print_instruction() {
+  printf "To use the dunegpvm scanner daemon, first reload the daemons: \n"
+  printf "     $ systemctl --user daemon-reload\n"
+  printf "To start the dunegpvm scanner daemon (one time): \n"
+  printf "     $ systemctl --user start .config/systemd/user/dunegpvm-scan.timer\n"
+  printf "     $ systemctl --user start .config/systemd/user/dunegpvm-scan.service\n"
+  printf "To start the dunegpvm scanner daemon automatically every login: \n"
+  printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.timer\n"
+  printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.service\n"
+}
+
+check_shell
 
 # 실제 동작
 case "$MODE" in
   install)
-    echo "Installing fnal_utility scripts to $DESTINATION"
+    printf "Installing fnal_utility scripts to $DESTINATION"
     copy_files
     add_alias_block
-    echo "fnal_utility scripts are installed successfully."
+    print_instruction
+    printf "fnal_utility scripts are installed successfully."
     ;;
   uninstall)
-    echo "Uninstalling fnal_utility scripts from $DESTINATION"
+    printf "Uninstalling fnal_utility scripts from $DESTINATION"
     remove_files
     remove_alias_block
-    echo "fnal_utility scripts are removed successfully."
+    printf "fnal_utility scripts are removed successfully."
     ;;
   *)
-    echo "Unknown mode"
+    printf "Unknown mode"
     exit 1
     ;;
 esac

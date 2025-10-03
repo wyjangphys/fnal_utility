@@ -1,82 +1,154 @@
-#!/bin/bash
-
+# put this into your ~/.bashrc or ~/.zshrc and then source the file
 _dunegpvm_ssh_wrapper() {
-  # config: path to file with selected index
+  # config
   local sel_file="${HOME}/.local/etc/dunegpvm"
-  local domain="${DUNEGPVM_DOMAIN:-.fnal.gov}"   # 기본 도메인, 필요하면 환경변수로 변경
-  local pad_width="${DUNEGPVM_PAD:-2}"          # 호스트 인덱스 패딩 (02 -> 2)
-  local fallback_action="${DUNEGPVM_FALLBACK:-error}" # error 또는 raw(원본 호스트로 접속)
+  local domain="${DUNEGPVM_DOMAIN:-.fnal.gov}"
+  local pad_width="${DUNEGPVM_PAD:-2}"
+  local fallback_action="${DUNEGPVM_FALLBACK:-error}"
 
-  # copy args
-  local -a args=("$@")
-  local hostpos=-1
-  # find first non-option argument (simple heuristic)
-  for i in "${!args[@]}"; do
-    a="${args[$i]}"
-    # treat args starting with '-' as ssh option; also allow KEY=VAL style to be skipped
-    if [[ "$a" != -* && "$a" != *=* ]]; then
-      hostpos=$i
-      break
-    fi
-  done
+  # detect shell and handle arrays appropriately
+  if [ -n "${BASH_VERSION:-}" ]; then
+    # --- BASH path (0-based arrays) ---
+    local -a args=("$@")
+    local hostpos=-1
+    local i
+    for i in "${!args[@]}"; do
+      a="${args[$i]}"
+      if [ "${a#-}" = "$a" ] && [ "${a#*=}" = "$a" ]; then
+        hostpos=$i
+        break
+      fi
+    done
 
-  # no positional host found -> call real ssh
-  if [ "$hostpos" -lt 0 ]; then
-    command ssh "${args[@]}"
-    return $?
-  fi
-
-  local orig_target="${args[$hostpos]}"
-  # split user and host (ssh syntax: [user@]host)
-  local userpart=""
-  local hostpart="$orig_target"
-  if [[ "$orig_target" == *@* ]]; then
-    userpart="${orig_target%@*}"
-    hostpart="${orig_target#*@}"
-  fi
-
-  # If hostpart matches "dunegpvm" exactly (or starts with dunegpvm and no digits), we intercept.
-  # We also accept plain "dunegpvm" (no domain).
-  if [[ "$hostpart" =~ ^dunegpvm([[:digit:]]*)($|\.) ]]; then
-    # read selected index
-    if [ ! -r "$sel_file" ]; then
-      echo "dunegpvm wrapper: selection file not found: $sel_file" >&2
-      [ "$fallback_action" = "raw" ] && command ssh "${args[@]}" || return 1
-    fi
-    local sel
-    sel="$(cat $sel_file)"
-    #sel="$(<"$sel_file" 2>/dev/null || echo "-1")" || sel="-1"
-    #sel="${sel//[[:space:]]/}"   # trim whitespace
-
-    if [[ "$sel" == "-1" || -z "$sel" ]]; then
-      echo "dunegpvm wrapper: no valid kerberos ticket or no selection (value='$sel')." >&2
-      [ "$fallback_action" = "raw" ] && command ssh "${args[@]}" || return 2
+    if [ "$hostpos" -lt 0 ]; then
+      command ssh "${args[@]}"
+      return $?
     fi
 
-    # format index with padding (02 -> 01,02,...)
-    # POSIX printf supports %0Nd
-    printf -v sel_padded "%0${pad_width}d" "$sel"
+    local orig_target="${args[$hostpos]}"
+    local userpart=""
+    local hostpart="$orig_target"
+    if [[ "$orig_target" == *@* ]]; then
+      userpart="${orig_target%@*}"
+      hostpart="${orig_target#*@}"
+    fi
 
-    # build new host: user@dunegpvmXX[.domain]
-    local newhost=""
-    if [ -n "$userpart" ]; then
-      newhost="${userpart}@dunegpvm${sel_padded}${domain}"
+    if [[ "$hostpart" =~ ^dunegpvm([[:digit:]]*)($|\.) ]]; then
+      if [ ! -r "$sel_file" ]; then
+        printf 'dunegpvm wrapper: selection file not found: %s\n' "$sel_file" >&2
+        [ "$fallback_action" = "raw" ] && command ssh "${args[@]}" || return 1
+      fi
+
+      local sel
+      sel="$(tr -d '[:space:]' < "$sel_file" 2>/dev/null || true)"
+
+      if [ -z "$sel" ] || [ "$sel" = "-1" ]; then
+        printf 'dunegpvm wrapper: no valid selection (value=%q)\n' "$sel" >&2
+        [ "$fallback_action" = "raw" ] && command ssh "${args[@]}" || return 2
+      fi
+
+      if ! printf '%s\n' "$sel" | grep -Eq '^[0-9]+$'; then
+        printf 'dunegpvm wrapper: selection is not numeric: %s\n' "$sel" >&2
+        return 3
+      fi
+
+      local sel_padded
+      sel_padded=$(printf "%0${pad_width}d" "$sel")
+
+      local newhost
+      if [ -n "$userpart" ]; then
+        newhost="${userpart}@dunegpvm${sel_padded}${domain}"
+      else
+        newhost="dunegpvm${sel_padded}${domain}"
+      fi
+
+      args[$hostpos]="$newhost"
+      printf 'ssh -> %s\n' "${args[$hostpos]}" >&2
+      command ssh "${args[@]}"
+      return $?
     else
-      newhost="dunegpvm${sel_padded}${domain}"
+      command ssh "${args[@]}"
+      return $?
     fi
 
-    # replace arg and call real ssh
-    args[$hostpos]="$newhost"
-    echo "ssh -> ${args[$hostpos]}" >&2    # optional: show mapping in stderr
-    command ssh "${args[@]}"
-    return $?
+  elif [ -n "${ZSH_VERSION:-}" ]; then
+    # --- ZSH path (1-based arrays) ---
+    typeset -a args
+    args=("$@")   # zsh arrays are 1-based
+    local hostpos=0
+    local idx=1
+    local a
+    for a in "${args[@]}"; do
+      # treat args starting with '-' as option; KEY=VAL skip
+      if [ "${a#-}" = "$a" ] && [ "${a#*=}" = "$a" ]; then
+        hostpos=$idx
+        break
+      fi
+      idx=$((idx+1))
+    done
+
+    if [ "$hostpos" -eq 0 ]; then
+      command ssh "${args[@]}"
+      return $?
+    fi
+
+    # in zsh arrays are 1-based, so args[hostpos] is correct
+    local orig_target="${args[$hostpos]}"
+    local userpart=""
+    local hostpart="$orig_target"
+    if [[ "$orig_target" == *@* ]]; then
+      userpart="${orig_target%@*}"
+      hostpart="${orig_target#*@}"
+    fi
+
+    if [[ "$hostpart" =~ ^dunegpvm([[:digit:]]*)($|\.) ]]; then
+      if [ ! -r "$sel_file" ]; then
+        printf 'dunegpvm wrapper: selection file not found: %s\n' "$sel_file" >&2
+        [ "$fallback_action" = "raw" ] && command ssh "${args[@]}" || return 1
+      fi
+
+      local sel
+      sel="$(tr -d '[:space:]' < "$sel_file" 2>/dev/null || true)"
+
+      if [ -z "$sel" ] || [ "$sel" = "-1" ]; then
+        printf 'dunegpvm wrapper: no valid selection (value=%q)\n' "$sel" >&2
+        [ "$fallback_action" = "raw" ] && command ssh "${args[@]}" || return 2
+      fi
+
+      if ! printf '%s\n' "$sel" | grep -Eq '^[0-9]+$'; then
+        printf 'dunegpvm wrapper: selection is not numeric: %s\n' "$sel" >&2
+        return 3
+      fi
+
+      local sel_padded
+      sel_padded=$(printf "%0${pad_width}d" "$sel")
+
+      local newhost
+      if [ -n "$userpart" ]; then
+        newhost="${userpart}@dunegpvm${sel_padded}${domain}"
+      else
+        newhost="dunegpvm${sel_padded}${domain}"
+      fi
+
+      args[$hostpos]="$newhost"
+      printf 'ssh -> %s\n' "${args[$hostpos]}" >&2
+      command ssh "${args[@]}"
+      return $?
+    else
+      command ssh "${args[@]}"
+      return $?
+    fi
+
   else
-    # host doesn't match dunegpvm pattern: call real ssh
-    command ssh "${args[@]}"
+    # unknown shell: fall back to calling ssh with original args
+    command ssh "$@"
     return $?
   fi
 }
 
-# override ssh in interactive shells
-ssh() { _dunegpvm_ssh_wrapper "$@"; }
+# override ssh in interactive shells only
+case $- in
+  *i*) ssh() { _dunegpvm_ssh_wrapper "$@"; } ;;
+  *) : ;;
+esac
 
