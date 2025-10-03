@@ -36,6 +36,7 @@ alias setup-genie-bdm=". $DESTINATION/bin/setup-genie-bdm.sh"
 alias setup-vnc=". $DESTINATION/bin/setup-vnc.sh"
 alias clearcert="rm -fv /tmp/x509up_u\$(id -u)"
 source $DESTINATION/bin/dunegpvm_ssh_wrapper.sh
+source $DESTINATION/bin/icarusgpvm_ssh_wrapper.sh
 $ALIASES_LAST_LINE
 EOF
 }
@@ -76,6 +77,9 @@ copy_files() {
   cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
   cp -v gpvm-scanner/dunegpvm-scan.service $HOME/.config/systemd/user/
   cp -v gpvm-scanner/dunegpvm-scan.timer $HOME/.config/systemd/user/
+  cp -v gpvm-scanner/icarusgpvm-scan.sh $DESTINATION/bin/
+  cp -v gpvm-scanner/icarusgpvm-scan.service $HOME/.config/systemd/user/
+  cp -v gpvm-scanner/icarusgpvm-scan.timer $HOME/.config/systemd/user/
 }
 
 remove_files() {
@@ -85,6 +89,9 @@ remove_files() {
   rm -fv $DESTINATION/bin/dunegpvm-scan.sh
   rm -fv $HOME/.config/systemd/user/dunegpvm-scan.service
   rm -fv $HOME/.config/systemd/user/dunegpvm-scan.timer
+  rm -fv $DESTINATION/bin/icarusgpvm-scan.sh
+  rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.service
+  rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.timer
 }
 
 add_alias_block() {
@@ -128,17 +135,17 @@ check_shell
 # 실제 동작
 case "$MODE" in
   install)
-    printf "Installing fnal_utility scripts to $DESTINATION"
+    printf "Installing fnal_utility scripts to $DESTINATION\n"
     copy_files
     add_alias_block
     print_instruction
-    printf "fnal_utility scripts are installed successfully."
+    printf "fnal_utility scripts are installed successfully.\n"
     ;;
   uninstall)
-    printf "Uninstalling fnal_utility scripts from $DESTINATION"
+    printf "Uninstalling fnal_utility scripts from $DESTINATION\n"
     remove_files
     remove_alias_block
-    printf "fnal_utility scripts are removed successfully."
+    printf "fnal_utility scripts are removed successfully.\n"
     ;;
   *)
     printf "Unknown mode"

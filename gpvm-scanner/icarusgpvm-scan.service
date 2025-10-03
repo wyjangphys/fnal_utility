@@ -1,0 +1,22 @@
+[Unit]
+Description=ICARUS GPVM load scanner (one-shot)
+Wants=icarusgpvm-scan.timer
+
+[Service]
+Type=oneshot
+# 실행 사용자 환경에서 동작 (systemd --user). Environment에서 오버라이드 가능.
+Environment=USERNAME=%u
+Environment=REALM=FNAL.GOV
+Environment=HOST_PREFIX=icarusgpvm
+Environment=DOMAIN=.fnal.gov
+Environment=START=1
+Environment=END=16
+Environment=SSH_CONNECT_TIMEOUT=6
+Environment=CONCURRENCY=16
+ExecStart=%h/.local/bin/icarusgpvm-scan.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+
