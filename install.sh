@@ -100,6 +100,7 @@ copy_files() {
     cp -v gpvm-scanner/icarusgpvm-scan.service $HOME/.config/systemd/user/
     cp -v gpvm-scanner/icarusgpvm-scan.timer $HOME/.config/systemd/user/
   elif [ "$OS_TYPE" = "macos" ]; then
+    cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
     cp -v gpvm-scanner/com.user.dunegpvm.scan.plist $HOME/Library/LaunchAgents/
   fi
 }
