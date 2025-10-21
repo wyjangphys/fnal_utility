@@ -1,12 +1,31 @@
 #!/bin/sh
 
+# Detect OS
+case "$(uname -s)" in
+  Darwin)
+    OS_TYPE="macos"
+    ;;
+  Linux)
+    OS_TYPE="linux"
+    ;;
+  *)
+    OS_TYPE="unknown"
+    ;;
+esac
+
+if [ "$OS_TYPE" = "unknown" ]; then
+  echo "Unsupported OS: $(uname -s)" >&2
+  exit 1
+fi
+
 # 초기 변수 설정
 SHELL_STARTUP_SCRIPT="$HOME/.bashrc"
 DEFAULT_DEST="$HOME/.local"
-FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh|dunegpvm_ssh_wrapper.sh"
+FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh|gpvm_ssh_wrapper.sh"
 GPVM_SCANNER_FILES="gpvm-scanner/dunegpvm-scan.service|gpvm-scanner/dunegpvm-scan.sh|gpvm-scanner/dunegpvm-scan.timer"
 ALIASES_FIRST_LINE='#=_=_=_=_=_= added by fnal_utility (do not remove) =_=_=_=_=_=_='
 ALIASES_LAST_LINE='#=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_='
+
 
 check_shell() {
   case $SHELL in
@@ -35,8 +54,7 @@ alias setup-dune=". $DESTINATION/bin/setup-dune.sh"
 alias setup-genie-bdm=". $DESTINATION/bin/setup-genie-bdm.sh"
 alias setup-vnc=". $DESTINATION/bin/setup-vnc.sh"
 alias clearcert="rm -fv /tmp/x509up_u\$(id -u)"
-source $DESTINATION/bin/dunegpvm_ssh_wrapper.sh
-source $DESTINATION/bin/icarusgpvm_ssh_wrapper.sh
+source $DESTINATION/bin/gpvm_ssh_wrapper.sh
 $ALIASES_LAST_LINE
 EOF
 }
@@ -74,24 +92,32 @@ copy_files() {
   for file in $FILES_LIST; do
     cp -v "$file" "$DESTINATION/bin/" || echo "Failed to copy $file"
   done
-  cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
-  cp -v gpvm-scanner/dunegpvm-scan.service $HOME/.config/systemd/user/
-  cp -v gpvm-scanner/dunegpvm-scan.timer $HOME/.config/systemd/user/
-  cp -v gpvm-scanner/icarusgpvm-scan.sh $DESTINATION/bin/
-  cp -v gpvm-scanner/icarusgpvm-scan.service $HOME/.config/systemd/user/
-  cp -v gpvm-scanner/icarusgpvm-scan.timer $HOME/.config/systemd/user/
+  if [ "$OS_TYPE" = "linux" ]; then
+    cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
+    cp -v gpvm-scanner/dunegpvm-scan.service $HOME/.config/systemd/user/
+    cp -v gpvm-scanner/dunegpvm-scan.timer $HOME/.config/systemd/user/
+    cp -v gpvm-scanner/icarusgpvm-scan.sh $DESTINATION/bin/
+    cp -v gpvm-scanner/icarusgpvm-scan.service $HOME/.config/systemd/user/
+    cp -v gpvm-scanner/icarusgpvm-scan.timer $HOME/.config/systemd/user/
+  elif [ "$OS_TYPE" = "macos" ]; then
+    cp -v gpvm-scanner/com.user.dunegpvm.scan.plist $HOME/Library/LaunchAgents/
+  fi
 }
 
 remove_files() {
   for file in $FILES_LIST; do
     rm -fv "$DESTINATION/$file" || echo "Failed to remove $file"
   done
-  rm -fv $DESTINATION/bin/dunegpvm-scan.sh
-  rm -fv $HOME/.config/systemd/user/dunegpvm-scan.service
-  rm -fv $HOME/.config/systemd/user/dunegpvm-scan.timer
-  rm -fv $DESTINATION/bin/icarusgpvm-scan.sh
-  rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.service
-  rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.timer
+  if [ "$OS_TYPE" = "linux" ]; then
+    rm -fv $DESTINATION/bin/dunegpvm-scan.sh
+    rm -fv $HOME/.config/systemd/user/dunegpvm-scan.service
+    rm -fv $HOME/.config/systemd/user/dunegpvm-scan.timer
+    rm -fv $DESTINATION/bin/icarusgpvm-scan.sh
+    rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.service
+    rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.timer
+  elif [ "$OS_TYPE" = "macos" ]; then
+    rm -fv $HOME/Library/LaunchAgents/com.user.dunegpvm.scan.plist
+  fi
 }
 
 add_alias_block() {
