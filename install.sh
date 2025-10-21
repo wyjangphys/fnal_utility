@@ -128,6 +128,14 @@ print_instruction() {
   printf "To start the dunegpvm scanner daemon automatically every login: \n"
   printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.timer\n"
   printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.service\n"
+  printf "\n"
+  printf "For macOS, to start launchd service,\n"
+  printf "     $ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.dunegpvm.scan.plist || true\n"
+  printf "To stop the launchd service,\n"
+  printf "     $ launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.dunegpvm.scan.plist\n"
+  printf "To see the logs,\n"
+  printf "     $ tail -n 200 ~/Library/Logs/dunegpvm-scan.out.log\n"
+  printf "     $ tail -n 200 ~/Library/Logs/dunegpvm-scan.err.log\n"
 }
 
 check_shell
