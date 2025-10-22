@@ -8,7 +8,7 @@ Type=oneshot
 Environment=USERNAME=%u
 Environment=REALM=FNAL.GOV
 Environment=HOST_PREFIX=icarusgpvm
-Environment=DOMAIN=.fnal.gov
+Environment=DOMAIN=fnal.gov
 Environment=START=1
 Environment=END=16
 Environment=SSH_CONNECT_TIMEOUT=6
