@@ -179,7 +179,7 @@ set_prompt(){
   fi
 }
 
-ups_list_sort(){
+upsls(){
   local package=$1
   if [ -z "$package" ]; then
     echo "Usage: ups_list_sort <package name>"
