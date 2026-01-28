@@ -49,6 +49,8 @@ $ALIASES_FIRST_LINE
 export FNAL_UTIL_ROOT="${DESTINATION}/../"
 alias appt=". $DESTINATION/bin/setup-appt.sh"
 alias appt_build=". $DESTINATION/bin/setup-appt-build.sh"
+alias setup-spack=". /nashome/w/wyjang/.local/bin/setup-spack.sh"
+alias setup-g4=". /nashome/w/wyjang/.local/bin/setup-g4.sh"
 alias setup-icarus=". $DESTINATION/bin/setup-icarus-sl7.sh"
 alias setup-dune=". $DESTINATION/bin/setup-dune.sh"
 alias setup-genie-bdm=". $DESTINATION/bin/setup-genie-bdm.sh"
