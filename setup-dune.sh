@@ -20,3 +20,8 @@ fi
 alias ls="ls --color"
 export appdir="/exp/dune/app/users/wyjang"
 export datadir="/exp/dune/data/users/wyjang"
+
+# HTCondor related aliases
+alias jobsub_q="jobsub_q -G dune --user wyjang"
+alias jobsub_fetchlog="jobsub_fetchlog -G dune"
+alias jobsub_rm="jobsub_rm -G dune"
