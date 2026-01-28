@@ -182,7 +182,7 @@ set_prompt(){
 upsls(){
   local package=$1
   if [ -z "$package" ]; then
-    echo "Usage: ups_list_sort <package name>"
+    echo "Usage: upsls <package name>"
     return 1
   fi
 
