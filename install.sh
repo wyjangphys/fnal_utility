@@ -94,6 +94,7 @@ copy_files() {
   for file in $FILES_LIST; do
     cp -v "$file" "$DESTINATION/bin/" || echo "Failed to copy $file"
   done
+  cp -v vim/indent/fhicl.vim ~/.vim/indent/fhicl.vim
   if [ "$OS_TYPE" = "linux" ]; then
     cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
     cp -v gpvm-scanner/dunegpvm-scan.service $HOME/.config/systemd/user/
