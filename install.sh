@@ -21,7 +21,7 @@ fi
 # 초기 변수 설정
 SHELL_STARTUP_SCRIPT="$HOME/.bashrc"
 DEFAULT_DEST="$HOME/.local"
-FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus-sl7.sh|setup-vnc.sh|gpvm_ssh_wrapper.sh"
+FILES="setup-appt-build.sh|setup-dune.sh|setup-dune-alma9.sh|setup-genie-bdm.sh|setup-samweb.sh|utility.sh|setup-appt.sh|setup-dune-sl7.sh|setup-icarus.sh|setup-icarus-alma9.sh|setup-icarus-sl7.sh|setup-vnc.sh|gpvm_ssh_wrapper.sh"
 GPVM_SCANNER_FILES="gpvm-scanner/dunegpvm-scan.service|gpvm-scanner/dunegpvm-scan.sh|gpvm-scanner/dunegpvm-scan.timer"
 ALIASES_FIRST_LINE='#=_=_=_=_=_= added by fnal_utility (do not remove) =_=_=_=_=_=_='
 ALIASES_LAST_LINE='#=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_='
