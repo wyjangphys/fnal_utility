@@ -164,19 +164,27 @@ check_n_start_apptainer() {
 }
 
 set_prompt(){
-  RED="\[\033[0;31m\]"
-  GREEN="\[\033[0;32m\]"
-  BLUE="\[\033[0;34m\]"
-  YELLOW="\[\033[0;33m\]"
-  PURPLE="\[\033[0;35m\]"
-  CYAN="\[\033[0;36m\]"
-  RESET="\[\033[0m\]"
+  # POSIX standard set_prompt
+  RED=$(printf '\033[0;31m')
+  GREEN=$(printf '\033[0;32m')
+  BLUE=$(printf '\033[0;34m')
+  YELLOW=$(printf '\033[0;33m')
+  PURPLE=$(printf '\033[0;35m')
+  CYAN=$(printf '\033[0;36m')
+  RESET=$(printf '\033[0m')
+
+  user_name="${USER:-$(whoami)}"
+  host_name="${HOSTNAME:-$(uname -n)}"
+  current_path=$(shorten_path)
+  git_branch=$(parse_git_branch)
 
   if [ -n "$APPTAINER_CONTAINER" ]; then
-    export PS1="${GREEN}[${RESET}${RED}Appt: ${RESET}${CYAN}\u${RESET}@${BLUE}\h${RESET} \$(shorten_path) ${YELLOW}\$(parse_git_branch)${RESET}${GREEN}]${RESET} \$ "
+    prefix="${GREEN}[${RESET}${RED}Appt: ${RESET}"
   else
-    export PS1="${GREEN}[${RESET}${CYAN}\u${RESET}@${BLUE}\h${RESET} \$(shorten_path) ${YELLOW}\$(parse_git_branch)${RESET}${GREEN}]${RESET} \$ "
+    prefix="${GREEN}[${RESET}"
   fi
+  export PS1="${prefix}${CYAN}${user_name}${RESET}@${BLUE}${host_name}${RESET} ${current_path} ${YELLOW}${git_branch}${RESET}${GREEN}]${RESET} \$ "
+
 }
 
 upsls(){
