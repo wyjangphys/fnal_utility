@@ -19,8 +19,6 @@ else
 fi
 
 alias ls="ls --color"
-export appdir="/exp/icarus/app/users/wyjang"
-export datadir="/exp/icarus/data/users/wyjang"
 
 # HTCondor related aliases
 alias jobsub_q="jobsub_q -G icarus --user wyjang"

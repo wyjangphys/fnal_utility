@@ -14,9 +14,9 @@ echo "Running on Alma Linux 9"
 . /cvmfs/larsoft.opensciencegrid.org/spack-v0.22.0-fermi/setup-env.sh
 # check spack.readthedocs.io/en/latest/basic_usage.html for the detailed usage.
 run_command "Setting root $ROOT_VERSION via spack" spack load root@$ROOT_VERSION%gcc@12.2.0 arch=linux-almalinux9-x86_64_v3
-#run_command "Setting r-m-dd-config via spack" spack load r-m-dd-config experiment=icarus
 run_command "Setting up grid access authorization (submit mode)" get_bearer_token icarus;export BEARER_TOKEN_FILE=/run/user/`id -u`/bt_u`id -u`
 run_command "Setting ifdhc via spack" spack load ifdhc@$IFDHC_VERSION
+setup-g4
 set_prompt
 
 # deprecated or non-used packages
