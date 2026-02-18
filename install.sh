@@ -90,11 +90,12 @@ copy_files() {
   mkdir -p "$DESTINATION/state"
   mkdir -p "$HOME/.config/systemd/user"
 
-  cp -v ./.bashrc $DESTINATION/bin/
-  if [ -f $HOME/.bashrc ]; then
-    mv $HOME/.bashrc $HOME/.bashrc.bak
-  fi
-  ln -s $DESTINATION/bin/.bashrc $HOME/.bashrc
+#removed for non-fermilab gpvm computers
+#  cp -v ./.bashrc $DESTINATION/bin/
+#  if [ -f $HOME/.bashrc ]; then
+#    mv $HOME/.bashrc $HOME/.bashrc.bak
+#  fi
+#  ln -s $DESTINATION/bin/.bashrc $HOME/.bashrc
   for file in $FILES_LIST; do
     cp -v "$file" "$DESTINATION/bin/" || echo "Failed to copy $file"
   done
