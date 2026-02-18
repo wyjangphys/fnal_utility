@@ -128,6 +128,65 @@ parse_git_branch() {
     git rev-parse --abbrev-ref HEAD 2>/dev/null | sed 's/^/(/' | sed 's/$/)/'
 }
 
+function shorten_path_posix() {
+  # This is POSIX compatible version of shorten_path
+  path="${PWD%/}"
+  [ -z "$path" ] && path="/"
+
+  # Exception list handling
+  case "$path" in
+    "$HOME"*)
+      alias_name="~"
+      subpath="${path#$HOME}"
+      ;;
+    "/exp/$EXPERIMENT/app/users/${USER}"*)
+      alias_name="[appdir]"
+      subpath="${path#"/exp/$EXPERIMENT/app/users/${USER}"}"
+      ;;
+    "/exp/${EXPERIMENT}/data/users/${USER}"*)
+      alias_name="[datadir]"
+      subpath="${path#"/exp/${EXPERIMENT}/app/users/${USER}"}"
+      ;;
+    *)
+      alias_name=""
+      subpath="$path"
+      ;;
+  esac
+
+  subpath="${subpath#/}"
+  old_ifs="$IFS"
+  IFS='/'
+
+  set -f # prevent wild-card expansion
+  set -- $subpath
+  count=$#
+
+  if [ -n "$alias_name" ]; then
+    if [ $count -eq 0 ]; then
+      printf "$alias_name"
+    elif [ $count -eq 1 ]; then
+      printf "$alias_name/$1"
+    else
+      shift $((count -1))
+      printf "$alias_name/.../$1"
+    fi
+  else
+    # ordinary absolute path case
+    set -- $path
+    count=$#
+    if [ $count -le 2 ]; then
+      printf "$path"
+    else
+      first="$1"
+      shift $((count - 1))
+      echo "/$first/.../$1"
+    fi
+  fi
+
+  IFS="$old_ifs"
+  set +f
+}
+
 function shorten_path() {
   local path="$PWD"
   local home="$HOME"
@@ -184,6 +243,7 @@ check_n_start_apptainer() {
 }
 
 set_prompt(){
+  # list of path exceptions
   # POSIX standard set_prompt
   RED=$(printf '\033[0;31m')
   GREEN=$(printf '\033[0;32m')
@@ -195,7 +255,7 @@ set_prompt(){
 
   user_name="${USER:-$(whoami)}"
   host_name="${HOSTNAME:-$(uname -n)}"
-  current_path=$(shorten_path)
+  current_path=$(shorten_path_posix)
   git_branch=$(parse_git_branch)
 
   if [ -n "$APPTAINER_CONTAINER" ]; then
@@ -204,7 +264,6 @@ set_prompt(){
     prefix="${GREEN}[${RESET}"
   fi
   export PS1="${prefix}${CYAN}${user_name}${RESET}@${BLUE}${host_name}${RESET} ${current_path} ${YELLOW}${git_branch}${RESET}${GREEN}]${RESET} \$ "
-
 }
 
 upsls(){
