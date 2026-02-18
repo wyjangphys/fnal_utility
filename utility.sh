@@ -139,13 +139,13 @@ function shorten_path_posix() {
       alias_name="~"
       subpath="${path#$HOME}"
       ;;
-    "/exp/$EXPERIMENT/app/users/${USER}"*)
+    "/exp/${EXPERIMENT}/app/users/${USER}"*)
       alias_name="[appdir]"
-      subpath="${path#"/exp/$EXPERIMENT/app/users/${USER}"}"
+      subpath="${path#"/exp/${EXPERIMENT}/app/users/${USER}"}"
       ;;
     "/exp/${EXPERIMENT}/data/users/${USER}"*)
       alias_name="[datadir]"
-      subpath="${path#"/exp/${EXPERIMENT}/app/users/${USER}"}"
+      subpath="${path#"/exp/${EXPERIMENT}/data/users/${USER}"}"
       ;;
     *)
       alias_name=""
