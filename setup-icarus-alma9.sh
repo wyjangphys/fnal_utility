@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Version table
-ROOT_VERSION=6.28.12;   ROOT_HASH="/sfwfmqo" # root@6.28.12%gcc@12.2.0 arch=linux-almalinux9-x86_64_v2
-GEANT_VERSION=10.6.1;   GEANT_HASH="/dkd5wst"
+ROOT_VERSION=6.28.12;   ROOT_HASH="/hljl7gy" # root@6.28.12%gcc@12.2.0 arch=linux-almalinux9-x86_64_v2
+GEANT_VERSION=10.6.1;   GEANT_HASH="/r2dcnvb"
 CMAKE_VERSION=3.27.7
-IFDHC_VERSION=2.6.20;   IFDHC_HASH="/eu2izwm"
+IFDHC_VERSION=2.6.20;   IFDHC_HASH="/lrli3f5"
 GCC_VERSION=12.2.0
 FIFEUTILS_VERSION=3.7.4
 
