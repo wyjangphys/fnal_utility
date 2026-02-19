@@ -9,8 +9,8 @@ case $EXPERIMENT in
   "dune")
     ;;
   "icarus")
-    EXPAT_VERSION="2.5.0%gcc@11.4.1 arch=linux-almalinux9-x86_64_v3"
-    GEANT4_VERSION="10.6.1%gcc@12.2.0 arch=linux-almalinux9-x86_64_v3"
+    #EXPAT_VERSION="2.5.0%gcc@11.4.1 arch=linux-almalinux9-x86_64_v3"
+    #GEANT4_VERSION="10.6.1%gcc@12.2.0 arch=linux-almalinux9-x86_64_v3"
     ;;
   *)
     printf "Unsupported environment EXPERIMENT=$EXPERIMENT\n"
