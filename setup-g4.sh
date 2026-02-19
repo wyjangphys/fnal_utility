@@ -9,8 +9,8 @@ case $EXPERIMENT in
   "dune")
     ;;
   "icarus")
-    EXPAT_HASH="/63bs7em"
-    GEANT4_HASH="/r2dcnvb"
+    EXPAT_HASH="/cvjfrla"
+    GEANT4_HASH="/dkd5wst"
     ;;
   *)
     printf "Unsupported environment EXPERIMENT=$EXPERIMENT\n"
