@@ -16,8 +16,8 @@ echo "Running on Alma Linux 9"
 run_command "Setting root $ROOT_VERSION via spack" spack load $ROOT_HASH
 #run_command "Setting up grid access authorization (submit mode)" get_bearer_token icarus;export BEARER_TOKEN_FILE=/run/user/`id -u`/bt_u`id -u`
 run_command "Setting ifdhc via spack" spack load $IFDHC_HASH
-run_command "Setting expat via spack" spack load "/cvjfrla"
-run_command "Setting geant4 via spack" spack load "/r2dcnvb"
+run_command "Setting expat via spack" spack load /cvjfrla
+run_command "Setting geant4 via spack" spack load /r2dcnvb
 run_command "Sourcing geant4.sh ..." source $(spack location -i /r2dcnvb)/bin/geant4.sh
 export Geant4_DIR=$(spack location -i $GEANT4_HASH)/lib64/Geant4-$GEANT4_VERSION
 export G4DIR=$Geant4_DIR

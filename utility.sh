@@ -147,6 +147,10 @@ function shorten_path_posix() {
       alias_name="[datadir]"
       subpath="${path#"/exp/${EXPERIMENT}/data/users/${USER}"}"
       ;;
+    "/build/${USER}"*)
+      alias_name="/build"
+      subpath="${path#"/build/${USER}"}"
+      ;;
     *)
       alias_name=""
       subpath="$path"
@@ -245,13 +249,13 @@ check_n_start_apptainer() {
 set_prompt(){
   # list of path exceptions
   # POSIX standard set_prompt
-  RED=$(printf '\033[0;31m')
-  GREEN=$(printf '\033[0;32m')
-  BLUE=$(printf '\033[0;34m')
-  YELLOW=$(printf '\033[0;33m')
-  PURPLE=$(printf '\033[0;35m')
-  CYAN=$(printf '\033[0;36m')
-  RESET=$(printf '\033[0m')
+  RED=$(printf '\[\033[0;31m\]')
+  GREEN=$(printf '\[\033[0;32m\]')
+  BLUE=$(printf '\[\033[0;34m\]')
+  YELLOW=$(printf '\[\033[0;33m\]')
+  PURPLE=$(printf '\[\033[0;35m\]')
+  CYAN=$(printf '\[\033[0;36m\]')
+  RESET=$(printf '\[\033[0m\]')
 
   user_name="${USER:-$(whoami)}"
   host_name="${HOSTNAME:-$(uname -n)}"
