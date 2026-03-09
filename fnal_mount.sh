@@ -75,14 +75,14 @@ sshfs_umount() {
   ostype=$(detect_os)
   case "$ostype" in
     "Linux")
-      fusermount -u "$gpvm_home"
+      fusermount -u "$dunehome_mntpt"
       fusermount -u "$duneapp_mntpt"
       fusermount -u "$dunedata_mntpt"
       fusermount -u "$icarusapp_mntpt"
       fusermount -u "$icarusdata_mntpt"
       ;;
     "Darwin")
-      umount "$gpvm_home"
+      umount "$dunehome_mntpt"
       umount "$duneapp_mntpt"
       umount "$dunedata_mntpt"
       umount "$icarusapp_mntpt"
