@@ -265,11 +265,10 @@ function shorten_path_posix() {
 }
 
 function shorten_path() {
-  local path="$PWD"
-  local home="$HOME"
-
+  (
   # Remove trailing slash if any
-  path="${path%/}"
+  path="${PWD%/}"
+  home="$HOME"
 
   # If path is inside home directory
   if [[ "$path" == "$home"* ]]; then
@@ -298,6 +297,7 @@ function shorten_path() {
       echo "/${parts[1]}/.../${parts[count - 1]}"
     fi
   fi
+  )
 }
 
 check_n_start_apptainer() {

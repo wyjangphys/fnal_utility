@@ -78,10 +78,11 @@ fi
 ALIASES="$(generate_aliases)"
 
 # 파일 목록 분리
-IFS='|'
-set -- $FILES
-FILES_LIST="$@"
-unset IFS
+FILES_LIST=$(
+  IFS='|'
+  set -- $FILES
+  echo "$@"
+)
 
 # 공통 함수 (필요시)
 copy_files() {
