@@ -18,12 +18,12 @@ fi
 
 duneidx=$(printf "%02d" "$(cat $HOME/.local/etc/dunegpvm)")
 icarusidx=$(printf "%02d" "$(cat $HOME/.local/etc/icarusgpvm)")
-dunehome_mntpt="$HOME/mnt/dune_home"
+gpvmhome_mntpt="$HOME/mnt/gpvm_home"
 duneapp_mntpt="$HOME/mnt/dune_app"
 dunedata_mntpt="$HOME/mnt/dune_data"
 icarusapp_mntpt="$HOME/mnt/icarus_app"
 icarusdata_mntpt="$HOME/mnt/icarus_data"
-all_mntpt="$duneapp_mntpt $dunedata_mntpt $icarusapp_mntpt $icarusdata_mntpt"
+all_mntpt="$gpvmhome_mntpt $duneapp_mntpt $dunedata_mntpt $icarusapp_mntpt $icarusdata_mntpt"
 
 detect_os() {
   case "$(uname -s)" in
@@ -47,19 +47,9 @@ sshfs_mount() {
   case "$ostype" in
     "Linux")
       mnt_option_name="x-gvfs-name"
-      sshfs "dunegpvm${duneidx}.fnal.gov:/nashome/w/${USER}" $dunehome_mntpt -o "$mnt_option_name=dune-home"
-      sshfs "dunegpvm${duneidx}.fnal.gov:/exp/dune/app/users/${USER}" $duneapp_mntpt -o "$mnt_option_name=dunegpvm-app"
-      sshfs "dunegpvm${duneidx}.fnal.gov:/exp/dune/data/users/${USER}" $dunedata_mntpt -o "$mnt_option_name=dunegpvm-data"
-      sshfs "icarusgpvm${icarusidx}.fnal.gov:/exp/icarus/app/users/${USER}" $icarusapp_mntpt -o "$mnt_option_name=icarusgpvm-app"
-      sshfs "icarusgpvm${icarusidx}.fnal.gov:/exp/icarus/data/users/${USER}" $icarusdata_mntpt -o "$mnt_option_name=icarusgpvm-data"
       ;;
     "Darwin")
       mnt_option_name="volname"
-      sshfs "dunegpvm${duneidx}.fnal.gov:/nashome/w/${USER}" $dunehome_mntpt -o "$mnt_option_name=dune-home"
-      sshfs "dunegpvm${duneidx}.fnal.gov:/exp/dune/app/users/${USER}" $duneapp_mntpt -o "$mnt_option_name=dunegpvm-app" -o local
-      sshfs "dunegpvm${duneidx}.fnal.gov:/exp/dune/data/users/${USER}" $dunedata_mntpt -o "$mnt_option_name=dunegpvm-data" -o local
-      sshfs "icarusgpvm${icarusidx}.fnal.gov:/exp/icarus/app/users/${USER}" $icarusapp_mntpt -o "$mnt_option_name=icarusgpvm-app" -o local
-      sshfs "icarusgpvm${icarusidx}.fnal.gov:/exp/icarus/data/users/${USER}" $icarusdata_mntpt -o "$mnt_option_name=icarusgpvm-data" -o local
       ;;
     *)
       printf "Unsupported OS\n"
@@ -67,32 +57,33 @@ sshfs_mount() {
       ;;
   esac
 
-  mkdir -p $all_mntpt
-
+  sshfs "dunegpvm${duneidx}.fnal.gov:/nashome/w/${USER}/" $gpvmhome_mntpt -o "$mnt_option_name=gpvm-home"
+  sshfs "dunegpvm${duneidx}.fnal.gov:/exp/dune/app/users/${USER}/" $duneapp_mntpt -o "$mnt_option_name=dunegpvm-app"
+  sshfs "dunegpvm${duneidx}.fnal.gov:/exp/dune/data/users/${USER}/" $dunedata_mntpt -o "$mnt_option_name=dunegpvm-data"
+  sshfs "icarusgpvm${icarusidx}.fnal.gov:/exp/icarus/app/users/${USER}/" $icarusapp_mntpt -o "$mnt_option_name=icarusgpvm-app"
+  sshfs "icarusgpvm${icarusidx}.fnal.gov:/exp/icarus/data/users/${USER}/" $icarusdata_mntpt -o "$mnt_option_name=icarusgpvm-data"
 }
 
 sshfs_umount() {
   ostype=$(detect_os)
+  umount_cmd=""
   case "$ostype" in
     "Linux")
-      fusermount -u "$dunehome_mntpt"
-      fusermount -u "$duneapp_mntpt"
-      fusermount -u "$dunedata_mntpt"
-      fusermount -u "$icarusapp_mntpt"
-      fusermount -u "$icarusdata_mntpt"
+      umount_cmd="fusermount -u"
       ;;
     "Darwin")
-      umount "$dunehome_mntpt"
-      umount "$duneapp_mntpt"
-      umount "$dunedata_mntpt"
-      umount "$icarusapp_mntpt"
-      umount "$icarusdata_mntpt"
+      umount_cmd="umount"
       ;;
     *)
       printf "unsupported os\n"
       exit 1
       ;;
   esac
+  $umount_cmd "$gpvmhome_mntpt"
+  $umount_cmd "$duneapp_mntpt"
+  $umount_cmd "$dunedata_mntpt"
+  $umount_cmd "$icarusapp_mntpt"
+  $umount_cmd "$icarusdata_mntpt"
 
   echo 0
 }
