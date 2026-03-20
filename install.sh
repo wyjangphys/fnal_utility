@@ -102,14 +102,13 @@ copy_files() {
   done
   cp -v vim/indent/fhicl.vim ~/.vim/indent/fhicl.vim
   if [ "$OS_TYPE" = "linux" ]; then
-    cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
+    cp -v gpvm-scanner/gpvm-scanner.sh $DESTINATION/bin/
     cp -v gpvm-scanner/dunegpvm-scan.service $HOME/.config/systemd/user/
     cp -v gpvm-scanner/dunegpvm-scan.timer $HOME/.config/systemd/user/
-    cp -v gpvm-scanner/icarusgpvm-scan.sh $DESTINATION/bin/
     cp -v gpvm-scanner/icarusgpvm-scan.service $HOME/.config/systemd/user/
     cp -v gpvm-scanner/icarusgpvm-scan.timer $HOME/.config/systemd/user/
   elif [ "$OS_TYPE" = "macos" ]; then
-    cp -v gpvm-scanner/dunegpvm-scan.sh $DESTINATION/bin/
+    cp -v gpvm-scanner/gpvm-scanner.sh $DESTINATION/bin/
     cp -v gpvm-scanner/com.user.dunegpvm.scan.plist $HOME/Library/LaunchAgents/
   fi
 }
@@ -119,13 +118,13 @@ remove_files() {
     rm -fv "$DESTINATION/$file" || echo "Failed to remove $file"
   done
   if [ "$OS_TYPE" = "linux" ]; then
-    rm -fv $DESTINATION/bin/dunegpvm-scan.sh
+    rm -fv $DESTINATION/bin/gpvm-scanner.sh
     rm -fv $HOME/.config/systemd/user/dunegpvm-scan.service
     rm -fv $HOME/.config/systemd/user/dunegpvm-scan.timer
-    rm -fv $DESTINATION/bin/icarusgpvm-scan.sh
     rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.service
     rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.timer
   elif [ "$OS_TYPE" = "macos" ]; then
+    rm -fv $DESTINATION/bin/gpvm-scanner.sh
     rm -fv $HOME/Library/LaunchAgents/com.user.dunegpvm.scan.plist
   fi
 }
