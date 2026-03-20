@@ -144,7 +144,11 @@ remove_alias_block() {
     cp -v "$SHELL_STARTUP_SCRIPT" "${SHELL_STARTUP_SCRIPT}.bak" || echo "Failed to generate backup file."
     FIRST_LINE=$(echo '%s\n' "$ALIASES" | head -n1)
     LAST_LINE=$(echo '%s\n' "$ALIASES" | tail -n1)
-    sed -i "/$(echo '%s' "$FIRST_LINE" | sed 's/[^^]/[&]/g')/,/$(echo '%s' "$LAST_LINE" | sed 's/[^^]/[&]/g')/d" "$SHELL_STARTUP_SCRIPT"
+    if [ "$OS_TYPE" = "linux" ]; then
+      sed -i "/$(echo '%s' "$FIRST_LINE" | sed 's/[^^]/[&]/g')/,/$(echo '%s' "$LAST_LINE" | sed 's/[^^]/[&]/g')/d" "$SHELL_STARTUP_SCRIPT"
+    elif [ "$OS_TYPE" = "macos" ]; then
+      sed -i '' "/$(echo "$FIRST_LINE" | sed 's/[^^]/[&]/g')/,/$(echo "$LAST_LINE" | sed 's/[^^]/[&]/g')/d" "$SHELL_STARTUP_SCRIPT"
+    fi
     echo "ALIASES block removed from ${SHELL_STARTUP_SCRIPT}. Backup file ${SHELL_STARTUP_SCRIPT}.bak made."
   fi
 }
@@ -162,28 +166,33 @@ stop_gpvm_scanner_daemon() {
 }
 
 print_instruction() {
-  printf "To use the dunegpvm scanner daemon, first reload the daemons: \n"
-  printf "     $ systemctl --user daemon-reload\n"
-  printf "To start the dunegpvm scanner daemon (one time): \n"
-  printf "     $ systemctl --user start .config/systemd/user/dunegpvm-scan.timer\n"
-  printf "     $ systemctl --user start .config/systemd/user/dunegpvm-scan.service\n"
-  printf "To start the dunegpvm scanner daemon automatically every login: \n"
-  printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.timer\n"
-  printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.service\n"
-  printf "\n"
-  printf "For macOS, to start launchd service,\n"
-  printf "     $ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.gpvm-scanner.plist\n"
-  printf "   in case you already bootstraped, \n"
-  printf "     $ launchctl kickstart -k gui/$(id -u)/com.user.gpvm-scanner\n"
-  printf "To stop the launchd service,\n"
-  printf "     $ launchctl disable gui/$(id -u)/com.user.gpvm-scanner\n"
-  printf "To restart the launchd service,\n"
-  printf "     $ launchctl enable gui/$(id -u)/com.user.gpvm-scanner\n"
-  printf "To stop and unregister the service,\n"
-  printf "     $ launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.gpvm-scanner.plist\n"
-  printf "To see the logs,\n"
-  printf "     $ tail -n 200 ~/Library/Logs/gpvm-scanner.out.log\n"
-  printf "     $ tail -n 200 ~/Library/Logs/gpvm-scanner.err.log\n"
+  if [ "$OS_TYPE" = "linux" ]; then
+    printf "To use the dunegpvm scanner daemon, first reload the daemons: \n"
+    printf "     $ systemctl --user daemon-reload\n"
+    printf "To start the dunegpvm scanner daemon (one time): \n"
+    printf "     $ systemctl --user start .config/systemd/user/dunegpvm-scan.timer\n"
+    printf "     $ systemctl --user start .config/systemd/user/dunegpvm-scan.service\n"
+    printf "To start the dunegpvm scanner daemon automatically every login: \n"
+    printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.timer\n"
+    printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.service\n"
+    printf "\n"
+  elif [ "$OS_TYPE" = "macos" ]; then
+    printf "For macOS, to start launchd service,\n"
+    printf "     $ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.gpvm-scanner.plist\n"
+    printf "   in case you already bootstraped, \n"
+    printf "     $ launchctl kickstart -k gui/$(id -u)/com.user.gpvm-scanner\n"
+    printf "To stop the launchd service,\n"
+    printf "     $ launchctl disable gui/$(id -u)/com.user.gpvm-scanner\n"
+    printf "To restart the launchd service,\n"
+    printf "     $ launchctl enable gui/$(id -u)/com.user.gpvm-scanner\n"
+    printf "To stop and unregister the service,\n"
+    printf "     $ launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.gpvm-scanner.plist\n"
+    printf "To see the logs,\n"
+    printf "     $ tail -n 200 ~/Library/Logs/gpvm-scanner.out.log\n"
+    printf "     $ tail -n 200 ~/Library/Logs/gpvm-scanner.err.log\n"
+  else
+    printf "Unsupported OS: $OS_TYPE\n"
+  fi
 }
 
 check_shell
