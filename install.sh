@@ -109,7 +109,7 @@ copy_files() {
     cp -v gpvm-scanner/icarusgpvm-scan.timer $HOME/.config/systemd/user/
   elif [ "$OS_TYPE" = "macos" ]; then
     cp -v gpvm-scanner/gpvm-scanner.sh $DESTINATION/bin/
-    cp -v gpvm-scanner/com.user.dunegpvm.scan.plist $HOME/Library/LaunchAgents/
+    cp -v gpvm-scanner/com.user.gpvm-scanner.plist $HOME/Library/LaunchAgents/
   fi
 }
 
@@ -125,7 +125,7 @@ remove_files() {
     rm -fv $HOME/.config/systemd/user/icarusgpvm-scan.timer
   elif [ "$OS_TYPE" = "macos" ]; then
     rm -fv $DESTINATION/bin/gpvm-scanner.sh
-    rm -fv $HOME/Library/LaunchAgents/com.user.dunegpvm.scan.plist
+    rm -fv $HOME/Library/LaunchAgents/com.user.gpvm-scanner.plist
   fi
 }
 
@@ -150,8 +150,15 @@ remove_alias_block() {
 }
 
 stop_gpvm_scanner_daemon() {
-  systemctl --user stop dunegpvm-scan.timer
-  systemctl --user stop dunegpvm-scan.service
+  if [ "$OS_TYPE" = "linux" ]; then
+    systemctl --user stop dunegpvm-scan.timer
+    systemctl --user stop dunegpvm-scan.service
+  elif [ "$OS_TYPE" = "macos" ]; then
+    launchctl disable gui/$(id -u)/com.user.gpvm-scanner
+    printf "launchctl agent com.user.gpvm-scanner disabled.\n"
+    printf "To re-enable, use command\n"
+    printf "     launchctl enable gui/$(id -u)/com.user.gpvm-scanner\n"
+  fi
 }
 
 print_instruction() {
@@ -165,16 +172,18 @@ print_instruction() {
   printf "     $ systemctl --user enable .config/systemd/user/dunegpvm-scan.service\n"
   printf "\n"
   printf "For macOS, to start launchd service,\n"
-  printf "     $ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.dunegpvm.scan.plist || true\n"
+  printf "     $ launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.gpvm-scanner.plist\n"
   printf "   in case you already bootstraped, \n"
-  printf "     $ launchctl kickstart -k gui/$(id -u)/com.user.dunegpvm.scan\n"
+  printf "     $ launchctl kickstart -k gui/$(id -u)/com.user.gpvm-scanner\n"
   printf "To stop the launchd service,\n"
-  printf "     $ launchctl disable gui/$(id -u) ~/Library/LaunchAgents/com.user.dunegpvm.scan.plist\n"
+  printf "     $ launchctl disable gui/$(id -u)/com.user.gpvm-scanner\n"
+  printf "To restart the launchd service,\n"
+  printf "     $ launchctl enable gui/$(id -u)/com.user.gpvm-scanner\n"
   printf "To stop and unregister the service,\n"
-  printf "     $ launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.dunegpvm.scan.plist\n"
+  printf "     $ launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.user.gpvm-scanner.plist\n"
   printf "To see the logs,\n"
-  printf "     $ tail -n 200 ~/Library/Logs/dunegpvm-scan.out.log\n"
-  printf "     $ tail -n 200 ~/Library/Logs/dunegpvm-scan.err.log\n"
+  printf "     $ tail -n 200 ~/Library/Logs/gpvm-scanner.out.log\n"
+  printf "     $ tail -n 200 ~/Library/Logs/gpvm-scanner.err.log\n"
 }
 
 check_shell
