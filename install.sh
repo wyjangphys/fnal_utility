@@ -165,6 +165,19 @@ stop_gpvm_scanner_daemon() {
   fi
 }
 
+remove_gpvm_scanner_daemon() {
+  if [ "$OS_TYPE" = "linux" ]; then
+    printf "Stopping gpvm-scanner.timer and gpvm-scanner.service ... "
+    systemctl --user stop gpvm-scanner.timer
+    systemctl --user stop gpvm-scanner.service
+    printf "DONE\n"
+  elif [ "$OS_TYPE" = "macos" ]; then
+    printf "Stopping launchd agent com.user.gpvm-scanner ... "
+    launchctl bootout gui/$(id -u)/com.user.gpvm-scanner
+    printf "DONE\n"
+  fi
+}
+
 print_instruction() {
   if [ "$OS_TYPE" = "linux" ]; then
     printf "To use the dunegpvm scanner daemon, first reload the daemons: \n"
@@ -208,6 +221,7 @@ case "$MODE" in
     ;;
   uninstall)
     printf "Uninstalling fnal_utility scripts from $DESTINATION\n"
+    remove_gpvm_scanner_daemon
     remove_files
     remove_alias_block
     printf "fnal_utility scripts are removed successfully.\n"
